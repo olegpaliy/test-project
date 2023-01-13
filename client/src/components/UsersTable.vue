@@ -224,6 +224,7 @@ export default {
     editUser(user) {
       this.editedItem = user;
       this.userDialog = true;
+      this.isCreating = false;
     },
 
     editUserHandler() {
@@ -233,7 +234,6 @@ export default {
           const index = this.inputAccounts.findIndex(
             (item) => response.data.id === item.id
           );
-          console.log(index);
           this.inputAccounts[index] = this.editedItem;
         });
       this.userDialog = false;
@@ -261,10 +261,7 @@ export default {
           .post("http://localhost:7777/", this.editedItem)
           .then((response) => {
             this.inputAccounts.push(response.data);
-            (this.editedItem.login = ""),
-              (this.editedItem.firstName = ""),
-              (this.editedItem.lastName = ""),
-              (this.editedItem.email = "");
+            this.editedItem = this.defaultItem;
             this.userDialog = false;
             this.validForm = false;
           });

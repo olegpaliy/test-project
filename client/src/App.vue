@@ -1,7 +1,12 @@
 <template>
   <v-app>
     <v-main>
-      <UsersTable :setAccounts="setAccounts" :accounts="accounts" />
+      <UsersTable
+        :removeUser="removeUser"
+        :accounts="accounts"
+        :saveAccout="saveAccout"
+        :editUserHandler="editUserHandler"
+      />
     </v-main>
   </v-app>
 </template>
@@ -30,8 +35,30 @@ export default {
         this.accounts = response.data;
       });
     },
-    setAccounts(id) {
-      this.accounts = this.accounts.filter((item) => item.id !== id);
+
+    editUserHandler(editedItem) {
+      axios
+        .put(`http://localhost:7777/${editedItem.id}`, editedItem)
+        .then((response) => {
+          const index = this.accounts.findIndex(
+            (item) => response.data.id === item.id
+          );
+          this.accounts[index] = editedItem;
+        });
+    },
+
+    removeUser(deletedId) {
+      axios.delete(`http://localhost:7777/${deletedId}`).then((response) => {
+        if (response.status === 200) {
+          this.accounts = this.accounts.filter((item) => item.id !== deletedId);
+        }
+      });
+    },
+
+    saveAccout(editedItem) {
+      axios.post("http://localhost:7777/", editedItem).then((response) => {
+        this.accounts.push(response.data);
+      });
     },
   },
 };

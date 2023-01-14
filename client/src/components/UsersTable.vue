@@ -110,7 +110,14 @@
                       No
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" class="mb-2" @click="removeUser">
+                    <v-btn
+                      color="primary"
+                      class="mb-2"
+                      @click="
+                        removeUser(deletedId);
+                        userDelete = false;
+                      "
+                    >
                       Yes
                     </v-btn>
                   </v-card-actions>
@@ -125,15 +132,23 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   props: {
     accounts: {
       type: Array,
       required: true,
     },
-    setAccounts: {
+    removeUser: {
       type: Function,
+      required: true,
+    },
+    saveAccout: {
+      type: Function,
+      required: true,
+    },
+    editUserHandler: {
+      type: Function,
+      required: true,
     },
   },
   computed: {
@@ -157,7 +172,7 @@ export default {
       },
       set(val) {
         if (!val) {
-          this.editedItem = this.defaultItem;
+          this.editedItem = { ...this.defaultItem };
         }
         this.userDialog = val;
       },
@@ -211,9 +226,11 @@ export default {
 
     isCreateOrEdit() {
       if (this.isCreating) {
-        this.saveAccout();
+        this.saveAccout(this.editedItem);
+        this.checkUserDialog = false;
       } else {
-        this.editUserHandler();
+        this.editUserHandler(this.editedItem);
+        this.checkUserDialog = false;
       }
     },
 
@@ -226,37 +243,6 @@ export default {
       this.editedItem = user;
       this.checkUserDialog = true;
       this.isCreating = false;
-    },
-
-    editUserHandler() {
-      axios
-        .put(`http://localhost:7777/${this.editedItem.id}`, this.editedItem)
-        .then((response) => {
-          const index = this.inputAccounts.findIndex(
-            (item) => response.data.id === item.id
-          );
-          this.inputAccounts[index] = this.editedItem;
-
-          this.checkUserDialog = false;
-        });
-    },
-
-    removeUser() {
-      axios
-        .delete(`http://localhost:7777/${this.deletedId}`)
-        .then((response) => {
-          if (response.status === 200) {
-            this.setAccounts(this.deletedId);
-          }
-        });
-      this.userDelete = false;
-    },
-
-    saveAccout() {
-      axios.post("http://localhost:7777/", this.editedItem).then((response) => {
-        this.inputAccounts.push(response.data);
-        this.checkUserDialog = false;
-      });
     },
   },
 };

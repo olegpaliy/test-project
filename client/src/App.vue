@@ -2,9 +2,9 @@
   <v-app>
     <v-main>
       <UsersTable
-        :removeUser="removeUser"
+        :removeUserHandler="removeUserHandler"
         :accounts="accounts"
-        :saveAccout="saveAccout"
+        :saveUserHandler="saveUserHandler"
         :editUserHandler="editUserHandler"
       />
     </v-main>
@@ -43,11 +43,11 @@ export default {
           const index = this.accounts.findIndex(
             (item) => response.data.id === item.id
           );
-          this.accounts[index] = editedItem;
+          this.accounts.splice(index, 1, response.data);
         });
     },
 
-    removeUser(deletedId) {
+    removeUserHandler(deletedId) {
       axios.delete(`http://localhost:7777/${deletedId}`).then((response) => {
         if (response.status === 200) {
           this.accounts = this.accounts.filter((item) => item.id !== deletedId);
@@ -55,7 +55,7 @@ export default {
       });
     },
 
-    saveAccout(editedItem) {
+    saveUserHandler(editedItem) {
       axios.post("http://localhost:7777/", editedItem).then((response) => {
         this.accounts.push(response.data);
       });

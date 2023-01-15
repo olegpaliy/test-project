@@ -46,42 +46,13 @@
                 :setCreateUser="setCreateUser"
               />
 
-              <v-dialog v-model="isDeleteModalOpen" width="300px">
-                <v-card>
-                  <v-card-text>
-                    <v-card-text></v-card-text>
-                    <v-row>
-                      <v-col cols="12">
-                        <p>Are you sure?</p>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-                  <v-divider></v-divider>
-                  <v-card-actions>
-                    <v-btn
-                      color="secondary"
-                      class="mb-2"
-                      @click="
-                        isDeleteModalOpen = false;
-                        deletedId = null;
-                      "
-                    >
-                      No
-                    </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      color="primary"
-                      class="mb-2"
-                      @click="
-                        removeUserHandler(deletedId);
-                        isDeleteModalOpen = false;
-                      "
-                    >
-                      Yes
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
+              <DeleteModal
+                :isDeleteModalOpen="isDeleteModalOpen"
+                :getDeletedId="getDeletedId"
+                :removeUserHandler="removeUserHandler"
+                :deletedId="deletedId"
+                :setDeleteModal="setDeleteModal"
+              />
             </v-card-text>
           </v-card>
         </v-col>
@@ -92,9 +63,11 @@
 
 <script>
 import UsersDialog from "./UsersDialog.vue";
+import DeleteModal from "./DeleteModal";
 export default {
   components: {
     UsersDialog,
+    DeleteModal,
   },
   props: {
     accounts: {
@@ -126,7 +99,6 @@ export default {
         return this.isUserModalOpen;
       },
       set(val) {
-        console.log("here");
         if (!val) {
           this.editedItem = { ...this.defaultItem };
         }
@@ -138,7 +110,7 @@ export default {
     return {
       isUserModalOpen: false,
       isDeleteModalOpen: false,
-      deletedId: null,
+      deletedId: "",
       isCreateUser: false,
 
       headers: [
@@ -201,6 +173,14 @@ export default {
     setCreateUser(value) {
       this.isCreateUser = value;
     },
+
+    getDeletedId(value) {
+      this.deletedId = value;
+    },
+    
+    setDeleteModal(val) {
+      this.isDeleteModalOpen = val
+    }
   },
 };
 </script>

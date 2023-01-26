@@ -39,6 +39,7 @@
           @click="createOrEditUserHandler(account)"
           color="primary"
           class="mb-2"
+          :disabled="!validFormDialog"
         >
           Save
         </v-btn>
